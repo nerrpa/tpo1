@@ -1,5 +1,6 @@
 package task3;
 
+import task3.item.CloneMachine;
 import task3.item.CornFlakes;
 import task3.item.DentrassiUnderwear;
 import task3.item.Item;
@@ -75,6 +76,21 @@ public class Main {
       }
     }
 
+    CloneMachine cm = new CloneMachine();
 
+    Arthur a2 = cm.copy(a);
+    if (a2 != null) {
+      System.out.println(a.getName() + " был клонирован с помошью " + cm.toString());
+    }
+
+    System.out.println("клонированный " + a2.lookAt(a) + ", его уверенность: " + a2.getConfidence());
+    System.out.println("обычный " + a.lookAt(a2) + ", его уверенность: " + a.getConfidence());
+    
+    Ford f2 = cm.copy(f);
+    if (f2 != null) {
+      System.out.println(f.getName() + " был клонирован с помошью " + cm.toString());
+    }
+
+    System.out.println("клонированный " + f2.getName() + " держит во флаконе " + f2.getVial().getFish().toString());
   }
 }
