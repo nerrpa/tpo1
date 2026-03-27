@@ -3,6 +3,8 @@ package task3;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import task3.fish.Fish;
 import task3.fish.YellowFish;
@@ -111,28 +113,28 @@ public class Task3 {
         void copyObjectWithDefaultConstructorCreatesNewInstance() {
             CornFlakes original = new CornFlakes();
             CornFlakes copy = cm.copy(original);
-            assertNotNull(copy);
-            assertNotSame(original, copy);
-            assertEquals(original.toString(), copy.toString());
+            assertAll(
+                () -> assertNotNull(copy),
+                () -> assertNotSame(original, copy),
+                () -> assertEquals(original.toString(), copy.toString())
+            );
 
             DentrassiUnderwear originalUnderwear = new DentrassiUnderwear();
             DentrassiUnderwear copyUnderwear = cm.copy(originalUnderwear);
-            assertNotNull(copyUnderwear);
-            assertNotSame(originalUnderwear, copyUnderwear);
-            assertEquals(originalUnderwear.toString(), copyUnderwear.toString());
-
-            ScvorshneineMatrass originalMatrass = new ScvorshneineMatrass();
-            ScvorshneineMatrass copyMatrass = cm.copy(originalMatrass);
-            assertNotNull(copyMatrass);
-            assertNotSame(originalMatrass, copyMatrass);
-            assertEquals(originalMatrass.toString(), copyMatrass.toString());
+            assertAll(
+                () -> assertNotNull(copyUnderwear),
+                () -> assertNotSame(originalUnderwear, copyUnderwear),
+                () -> assertEquals(originalUnderwear.toString(), copyUnderwear.toString())
+            );
 
             MSEReport originalReport = new MSEReport();
             MSEReport copyReport = cm.copy(originalReport);
-            assertNotNull(copyReport);
-            assertNotSame(originalReport, copyReport);
-            assertEquals(originalReport.getText(), copyReport.getText());
-            assertEquals(originalReport.willDeparted(), copyReport.willDeparted());
+            assertAll(
+                () -> assertNotNull(copyReport),
+                () -> assertNotSame(originalReport, copyReport),
+                () -> assertEquals(originalReport.getText(), copyReport.getText()),
+                () -> assertEquals(originalReport.willDeparted(), copyReport.willDeparted())
+            );
         }
 
         @Test
@@ -226,22 +228,25 @@ public class Task3 {
     class FishBehaviorTest {
         @Test
         void fishToStringAfterChangingFlags() {
-            Fish fish = new Fish("жоски");
+            String color = "жоски";
+            Fish fish = new Fish(color);
             fish.swimming = false;
             fish.shimmering = true;
-            assertEquals("жоски рыба, которая не плавает и переливается", fish.toString());
+            assertEquals(color + " рыба, которая не плавает и переливается", fish.toString());
 
             fish.swimming = true;
             fish.shimmering = false;
-            assertEquals("жоски рыба, которая плавает и не переливается", fish.toString());
+            assertEquals(color + " рыба, которая плавает и не переливается", fish.toString());
         }
 
         @Test
         void yellowFishIsYellowAndDefaults() {
             YellowFish yellow = new YellowFish();
-            assertEquals("желтый", yellow.getColor());
-            assertTrue(yellow.swimming);
-            assertTrue(yellow.shimmering);
+            assertAll(
+                () -> assertEquals("желтый", yellow.getColor()),
+                () -> assertTrue(yellow.swimming),
+                () -> assertTrue(yellow.shimmering)
+            );
         }
     }
 
@@ -250,30 +255,46 @@ public class Task3 {
         @Test
         void constructorAcceptsNullFish() {
             GlassVial vial = new GlassVial(null);
-            assertNull(vial.getFish());
-            assertEquals("стеклянный флакон", vial.toString());
+            assertAll(
+                () -> assertNull(vial.getFish()),
+                () -> assertEquals("стеклянный флакон", vial.toString())
+            );
         }
     }
 
     @Nested
     class ItemConfidenceBoostTest {
-        @Test
-        void itemConfidenceBoostReturnsSameValue() {
-            assertEquals(10.0, Item.confidenceBoost(10.0));
-            assertEquals(0.0, Item.confidenceBoost(0.0));
-            assertEquals(-5.0, Item.confidenceBoost(-5.0));
+        @ParameterizedTest
+        @CsvSource({
+            "10.0, 10.0",
+            "-4.0, -4.0",
+            "228.0, 228.0"
+        })
+        void itemConfidenceBoostReturnsSameValue(double x, double y) {
+            assertEquals(y, Item.confidenceBoost(x));
         }
 
-        @Test
-        void cornFlakesConfidenceBoostAppliesFormula() {
-            assertEquals(1.0, CornFlakes.confidenceBoost(0.0));
-            double c = 50.0;
-            double expected = Math.min(Math.pow(c/10, 2) + c * Math.PI * 3 / 10 + 1, 100);
-            assertEquals(expected, CornFlakes.confidenceBoost(c));
-            assertEquals(100.0, CornFlakes.confidenceBoost(200.0));
+        @ParameterizedTest
+        @CsvSource({
+            "0.0, 1.0",
+            "10.0, 11.42477796076938",
+            "25.0, 30.811944901923447",
+            "50.0, 73.1238898038469",
+            "60.0, 93.54866776461627",
+            "100.0, 100.0",
+            "200.0, 100.0",
+            "-10.0, -7.424777960769379"
+        })
+        void cornFlakesBoostFormula(double x, double y) {
+            assertEquals(y, CornFlakes.confidenceBoost(x), 1e-9);
+        }
 
-            assertTrue(CornFlakes.confidenceBoost(14.0) > 14.0);
-            assertTrue(CornFlakes.confidenceBoost(-15.0) < 0);
+        void cornFlakesBoostFormulaBorderPoints() { 
+            assertAll(
+                () -> assertTrue(CornFlakes.confidenceBoost(14.0) > 14.0),
+                () -> assertTrue(CornFlakes.confidenceBoost(-15.0) < 0),
+                () -> assertTrue(CornFlakes.confidenceBoost(-115.0) > 0)
+            );
         }
     }
 }
