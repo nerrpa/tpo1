@@ -31,6 +31,7 @@ public class Tangens {
         };
 
         double result = 0.0;
+
         for (int i = 0; i < n && i < coefficients.length; i++) {
             int pow = 2 * i + 1;
             result += coefficients[i] * Math.pow(reduced, pow);

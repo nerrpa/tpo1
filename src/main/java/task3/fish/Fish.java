@@ -16,7 +16,7 @@ public class Fish {
     public String toString() {
       return getColor() + " рыба, которая " 
       + (swimming ? "плавает " : "не плавает ")
-      + " и "
+      + "и "
       + (shimmering ? "переливается" : "не переливается");
     }
 }

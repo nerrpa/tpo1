@@ -49,4 +49,5 @@ public class TangensTest {
             assertEquals(expected, actual, 0.01);
         }
     }
+   
 }

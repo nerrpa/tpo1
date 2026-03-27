@@ -1,9 +1,10 @@
 package task3.person;
 
 import task3.item.CornFlakes;
+import task3.item.MSEReport;
 
 public class Arthur extends Person {
-    private int confidence = 50;
+    private double confidence = (Math.random() * 60);
     private boolean blinking = false;
 
     public Arthur() {
@@ -14,7 +15,13 @@ public class Arthur extends Person {
         blink();
 
         if (object instanceof CornFlakes) {
-            confidence += 10;
+            confidence = CornFlakes.confidenceBoost(confidence);
+        }
+        if (object instanceof MigrationServiceEmployee) {
+            confidence = 0;
+        }
+        if (object instanceof MSEReport) {
+            confidence = ((MSEReport)object).willDeparted() ? 0: 100;
         }
 
         return getName() + " смотрит на " + object.toString();
@@ -27,6 +34,6 @@ public class Arthur extends Person {
     public boolean isBlinking() { return blinking; }
     public void resetBlink() { blinking = false; }
 
-    public int getConfidence() { return confidence; }
+    public double getConfidence() { return confidence; }
 
 }

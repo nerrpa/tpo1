@@ -11,4 +11,8 @@ public abstract class Item {
   public String toString() {
     return name;
   }
+
+  public static double confidenceBoost(double confidence) {
+    return confidence;
+  }
 }
